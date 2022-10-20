@@ -1,0 +1,37 @@
+apiVersion: numaflow.numaproj.io/v1alpha1
+kind: Pipeline
+metadata:
+  name: go-numa-cartoonizer
+spec:
+  vertices:
+    - name: input
+      source:
+        http: {}
+    - name: go-numa-effects
+      udf:
+        container:
+          image: docker.io/cosmicchichu/go-numa-effects:latest
+          resources:
+            requests:
+              cpu: 3
+              memory: 1Gi
+      scale:
+        min: 2
+    - name: go-numa-stream
+      udf:
+        container:
+          image: docker.io/cosmicchichu/go-numa-stream:latest
+      scale:
+        min: 1
+    - name: log-output
+      sink:
+        log: {}
+      scale:
+        min: 1
+  edges:
+    - from: input
+      to: go-numa-effects
+    - from: go-numa-effects
+      to: go-numa-stream
+    - from: go-numa-stream
+      to: log-output
