@@ -3,7 +3,7 @@ Numaflow kubecon demo
 
 
 ### build and push images
-- docker login --username <dockerhubusername> --email <email>
+- docker login --username `<dockerhubusername>` --email `<email>`
 - podman login docker.io
 - execute build.sh
 ### setup container env with podman and k3d k8s cluster
