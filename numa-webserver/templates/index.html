@@ -18,21 +18,8 @@
         <div class="viewport">
             <img src="http://localhost:8080/stream" alt="http://localhost:8080/stream" class="shrinkToFit">
         </div>
-        <div class="panel-body">
-            <!--If there's an error, display the error-->
-            {{ if .ErrorTitle}}
-            <p class="bg-danger">
-                {{.ErrorTitle}}: {{.ErrorMessage}}
-            </p>
-            {{end}}
-            <!--Create a form that POSTs to the `/u/register` route-->
-            <form class="form" action="/process" method="POST">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="foo@bar.com">
-                </div>
-                <button type="submit" class="btn btn-primary">Process</button>
-            </form>
+        <div class="viewport">
+            <img src="http://localhost:9898" alt="http://localhost:9898" class="shrinkToFit">
         </div>
     </div>
 </div>
