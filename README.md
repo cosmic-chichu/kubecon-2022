@@ -11,7 +11,7 @@ Numaflow kubecon demo
 - brew upgrade podman or brew install podman
 - brew install k3d
 - podman machine rm (for removing old machine image)
-- podman machine init --cpus 8 --memory 10000 --disk-size 60
+- podman machine init --cpus 10 --memory 10000 --disk-size 60
 - sudo /usr/local/Cellar/podman/4.2.1/bin/podman-mac-helper install
 - podman machine set --rootful
 - podman machine start
