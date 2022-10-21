@@ -29,4 +29,5 @@ Numaflow kubecon demo
 - `kubectl -n numaflow-system port-forward deployment/numaflow-server 8443:8443`
 
 ### run numa-webserver
+- brew install opencv
 - open localhost:8080 to see live streaming
