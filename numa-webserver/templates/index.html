@@ -4,7 +4,7 @@
 {{ template "header.html" .}}
 
 <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <a class="navbar-brand" href="https://numaflow.numaproj.io/">
                 <img src="data:image/png;base64,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" alt="logo" class="logo">
@@ -13,13 +13,15 @@
         </div>
     </div>
 </nav>
-<div style="padding-top: 120px;" class="col-lg-6">
-    <div class="panel panel-default">
-        <div class="viewport">
-            <img src="http://localhost:8080/stream" alt="http://localhost:8080/stream" class="shrinkToFit">
+<div class="container-fluid text-center" style="padding-top: 120px;">
+    <div class="row align-items-start">
+        <div class="col-lg-6">
+            <div><h3>Input</h3></div>
+            <img src="http://localhost:8080/stream" alt="http://localhost:8080/stream" class="img-fluid img-thumbnail">
         </div>
-        <div class="viewport">
-            <img src="http://localhost:9898" alt="http://localhost:9898" class="shrinkToFit">
+        <div class="col-lg-6">
+            <div><h3>Output</h3></div>
+            <img src="http://localhost:9898" alt="http://localhost:9898" class="img-fluid img-thumbnail">
         </div>
     </div>
 </div>
