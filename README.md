@@ -15,7 +15,7 @@ Numaflow kubecon demo
 - sudo /usr/local/Cellar/podman/4.2.1/bin/podman-mac-helper install
 - podman machine set --rootful
 - podman machine start
-- k3d cluster create
+- k3d cluster create or kind create cluster
 
 ### setup numaflow controller and server
 - `kubectl create ns numaflow-system`
@@ -24,10 +24,11 @@ Numaflow kubecon demo
 
 ### start pipeline and export ports
 - `kubectl apply -n numaflow-system -f go-numa-http-pipeline.yaml`
-- `kubectl -n numaflow-system port-forward go-numa-cartoonizer-input-0-xxxx 8444:8443`
-- `kubectl -n numaflow-system port-forward go-numa-cartoonizer-go-numa-stream-0-xxxx 9898:9898`
+- `kubectl -n numaflow-system port-forward svc/go-numa-http-input 8444:8443`
+- `kubectl -n numaflow-system port-forward svc/go-numa-stream 9898`
 - `kubectl -n numaflow-system port-forward deployment/numaflow-server 8443:8443`
 
 ### run numa-webserver
 - brew install opencv
+- run webserver `./numa-webserver/main`
 - open localhost:8080 to see live streaming
