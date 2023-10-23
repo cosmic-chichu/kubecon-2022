@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	functionsdk "github.com/numaproj/numaflow-go/pkg/function"
-	"github.com/numaproj/numaflow-go/pkg/function/server"
+	"github.com/numaproj/numaflow-go/pkg/mapper"
 	"go-numa-effects/effects"
 	"image/jpeg"
+	"log"
 )
 
 type Input struct {
@@ -16,18 +16,27 @@ type Input struct {
 	Value []byte `json:"value"`
 }
 
-func handle(ctx context.Context, key string, data functionsdk.Datum) functionsdk.Messages {
-	_ = data.EventTime() // Event time is available
-	_ = data.Watermark() // Watermark is available
+func (f *Input) Map(ctx context.Context, keys []string, d mapper.Datum) mapper.Messages {
+	// directly forward the input to the output
+	val := d.Value()
+	eventTime := d.EventTime()
+	_ = eventTime
+	watermark := d.Watermark()
+	_ = watermark
 
-	return functionsdk.MessagesBuilder().Append(functionsdk.MessageToAll(getMsgBytes(data.Value())))
+	var resultKeys = keys
+	var resultVal = getMsgBytes(val)
+
+	return mapper.MessagesBuilder().Append(mapper.NewMessage(resultVal).WithKeys(resultKeys))
 }
 
 func getMsgBytes(input []byte) []byte {
 	var incomingData Input
-	err := json.Unmarshal(input, &incomingData)
+	err := json.Unmarshal(input,
+		&incomingData)
 	if err != nil {
-		e := fmt.Errorf("unable to unmarshal incoming data: %v", err)
+		e := fmt.Errorf("unable to unmarshal incoming data: %v",
+			err)
 		fmt.Println(e.Error())
 		return nil
 	}
@@ -57,7 +66,9 @@ func udfTransformImgBytes(value []byte) []byte {
 	}
 
 	var outBytes bytes.Buffer
-	err = jpeg.Encode(&outBytes, outImg.Img, nil)
+	err = jpeg.Encode(&outBytes,
+		outImg.Img,
+		nil)
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -65,7 +76,6 @@ func udfTransformImgBytes(value []byte) []byte {
 
 	return outBytes.Bytes()
 }
-
 
 func applyRandomEffect(img *effects.Image) *effects.Image {
 	// rand.Seed(time.Now().UnixNano())
@@ -79,9 +89,14 @@ func applyRandomEffect(img *effects.Image) *effects.Image {
 	// default:
 	// 	return effects.RunPixelate(img, 1)
 	// }
-	return effects.RunPencil(img, 1)
+	return effects.RunPencil(img,
+		1)
 }
 
 func main() {
-	server.New().RegisterMapper(functionsdk.MapFunc(handle)).Start(context.Background())
+	err := mapper.NewServer(&Input{}).Start(context.Background())
+	if err != nil {
+		log.Panic("Failed to start map function server: ",
+			err)
+	}
 }

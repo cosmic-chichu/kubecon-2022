@@ -10,7 +10,6 @@ import (
 	"github.com/hybridgroup/mjpeg"
 	"gocv.io/x/gocv"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -37,13 +36,15 @@ func main() {
 
 	// Process the templates at the start so that they don't have to be loaded
 	// from the disk again. This makes serving HTML pages very fast.
-	router.Static("/assets", "./assets")
+	router.Static("/assets",
+		"./assets")
 	router.LoadHTMLGlob("templates/*")
 
 	// open webcam
 	webcam, err = gocv.OpenVideoCapture(0)
 	if err != nil {
-		fmt.Printf("Error opening capture device: %v\n", 0)
+		fmt.Printf("Error opening capture device: %v\n",
+			0)
 		return
 	}
 	defer webcam.Close()
@@ -99,7 +100,8 @@ func postToPipeline(client *http.Client, imgBytes []byte) {
 
 	opBytes, err := json.Marshal(res)
 	if err != nil {
-		e := fmt.Errorf("failed to marshal Datum: %v", err)
+		e := fmt.Errorf("failed to marshal Datum: %v",
+			err)
 		fmt.Println(e)
 	}
 
@@ -110,7 +112,8 @@ func postToPipeline(client *http.Client, imgBytes []byte) {
 		fmt.Println(err)
 	}
 	if resp != nil {
-		io.Copy(ioutil.Discard, resp.Body)
+		io.Copy(io.Discard,
+			resp.Body)
 		resp.Body.Close()
 	}
 }
@@ -121,16 +124,19 @@ func mjpegCapture() {
 
 	// create http client
 	tr := &http.Transport{
+		MaxIdleConns:    8,
+		MaxConnsPerHost: 15,
+		IdleConnTimeout: 2 * time.Minute,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-	_ = client
 
 	for {
 		if ok := webcam.Read(&img); !ok {
-			fmt.Printf("Device closed: %v\n", 0)
-			return
+			fmt.Printf("Device closed: %v\n",
+				0)
 		}
+		time.Sleep(time.Millisecond * 80)
 		if img.Empty() {
 			continue
 		}
@@ -138,9 +144,8 @@ func mjpegCapture() {
 		buf, _ := gocv.IMEncode(".jpg", img)
 
 		opImgBytes := buf.GetBytes()
-		go postToPipeline(client, opImgBytes)
+		postToPipeline(client, opImgBytes)
 		stream.UpdateJPEG(opImgBytes)
 		buf.Close()
-		time.Sleep(time.Millisecond * 200)
 	}
 }

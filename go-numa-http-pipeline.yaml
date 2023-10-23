@@ -3,13 +3,27 @@ kind: Pipeline
 metadata:
   name: go-numa-cartoonizer
 spec:
+  edges:
+    - from: input
+      to: go-numa-effects
+    - from: go-numa-effects
+      to: go-numa-stream
+    - from: go-numa-stream
+      to: log-output
   vertices:
     - name: input
       source:
         http: {}
+      metadata:
+        labels:
+          app: go-numa-cartoonizer-input
     - name: go-numa-effects
+      metadata:
+        labels:
+          app: go-numa-cartoonizer-effects
       udf:
         container:
+          imagePullPolicy: Always
           image: docker.io/cosmicchichu/go-numa-effects:latest
           resources:
             requests:
@@ -20,7 +34,11 @@ spec:
     - name: go-numa-stream
       udf:
         container:
+          imagePullPolicy: Always
           image: docker.io/cosmicchichu/go-numa-stream:latest
+      metadata:
+        labels:
+          app: go-numa-cartoonizer-stream
       scale:
         min: 1
     - name: log-output
@@ -28,10 +46,33 @@ spec:
         log: {}
       scale:
         min: 1
-  edges:
-    - from: input
-      to: go-numa-effects
-    - from: go-numa-effects
-      to: go-numa-stream
-    - from: go-numa-stream
-      to: log-output
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-numa-http-input
+  labels:
+    app: go-numa-cartoonizer-input
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 8443
+      targetPort: 8443
+  selector:
+    app: go-numa-cartoonizer-input
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-numa-stream
+  labels:
+    app: go-numa-cartoonizer-stream
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 9898
+      targetPort: 9898
+  selector:
+    app: go-numa-cartoonizer-stream
