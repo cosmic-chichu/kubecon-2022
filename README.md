@@ -24,8 +24,8 @@ Numaflow kubecon demo
 
 ### start pipeline and export ports
 - `kubectl apply -n numaflow-system -f go-numa-http-pipeline.yaml`
-- `kubectl -n numaflow-system port-forward svc/go-numa-http-input 8444:8443`
-- `kubectl -n numaflow-system port-forward svc/go-numa-stream 9898`
+- `kubectl port-forward svc/go-numa-http-input 8444:8443`
+- `kubectl port-forward svc/go-numa-stream 9898`
 - `kubectl -n numaflow-system port-forward deployment/numaflow-server 8443:8443`
 
 ### run numa-webserver
